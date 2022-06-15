@@ -5,14 +5,13 @@ const { ObjectId } = require('bson');
 
 const app = express();
 app.use(express.json());
-
 mongoose.connect('mongodb://localhost:27017/lab2');
 
 const userSchema =mongoose.Schema({
   
     email: String,
     username:{type:String,
-              required:true},
+    required:true},
     password: String,
     questions:[String],
     Solutions:[String],
@@ -91,6 +90,50 @@ app.delete("user/delete/:id",(req,res)=>{
     }
    
     const main_database = [users,challenges];
+
+//Challenges
+const challengesSchema=mongoose.Schema({
+  name:{
+      type:String,
+  required:true
+},
+  challengeLevel:[String],
+  challengeLanguage:[String],
+  typeOfChallenge:[String],
+  challengeScore:[Number],
+  user_id:{
+      type:mongoose.ObjectId,
+      ref:'User'
+
+  }
+
+})
+const Challenge=mongoose.model('Challenge',challengesSchema);
+
+app.post('/add/challenge/',(req,res)=>{
+const addChallenge=new Challenge({
+name:req.body.name,
+challengeLevel:req.body.challengeLevel,
+challengeLanguage:req.body.challengeLanguage,
+typeOfChallenge:req.body.typeOfChallenge,
+challengeScore:req.body.challengeScore,
+user_id:req.body.user_id
+
+})
+addChallenge.save().then(() => res.json({"msg":"challengecreated"}))
+})
+
+app.get('/challenges',(req,res)=>{
+Challenge.find({}).then((data)=>{
+  res.json(data)});
+});
+app.delete('challenges/delete/:_id',(req,res)=>{
+  Challenge.deleteOne({name:req.params.name}).then(()=>{
+     res.json({"msg":"challenge deleted"})
+  });
+});
+
+app.listen(3000,()=>console.log("Express Started!"));
 
 
     
