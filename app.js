@@ -157,9 +157,81 @@ app.delete('LeaderBoard/delete/:id',(req,res)=>{
    
 
   
-app.listen(3000,()=>console.log(`express started !`));
 
+const groupoflevel = mongoose.Schema({
+    _id:"ObjectID",
+        levels:[typeOfChallenge],
+
+    userID: {
       
+      type:mongoose.ObjectId,
+      ref:"users"
+  }
+  
+  })
+  
+  const group = mongoose.model("group", taskSchema)
+  
+  
+  // insert
+  app.post("/groupoflevel/create", (req, res) => {
+    
+      const groupoflevel = new groupoflevel({
+      id: req.body._id,
+      levels: req.body.levels
+    })
+  
+  
+      tasks.save().then(() => res.json({ msg: "groupoflevel created" }))
+  })
+  
+  
+  // find
+  app.get("/groupoflevel", (req, res) => {
+    groupoflevel.find({}).then(data => {
+      console.log(groupoflevel);
+    })
+  })
+  
+  // update
+  
+  app.put("/groupoflevel/create/", (req, res) => {
+    task.updateOne({ _id: req.body.id }, { levels: req.body.levels }).then(() => {
+      res.json({ msg: "updated" })
+    })
+  })
+  
+  // // delete
+  app.delete("/groupoflevel/delete/", (req, res) => {
+    task.deleteOne({ _id: req.body.id }).then(() => {
+      res.json({ msg: "groupoflevel deleted" })
+    })
+  })
+  
+  
+  
+  const levelsSchema = mongoose.Schema({
+    name: {
+      type: String,
+      required: true,
+    },
+    levels: Number,
 
-
-
+  })
+  
+  
+  
+  const levels = mongoose.model("levels", levelsSchema)
+  
+  app.post("/user/create", (req, res) => {
+    const user = new users({
+      id: req.body._id,
+      levels: req.body.levels,
+    
+    })
+  
+    user.save().then(()=> res.json("created user"))
+  })
+  
+  
+  app.listen(3000, () => console.log("good"))
