@@ -1,37 +1,63 @@
-/*const userSchema=Schema({
-    _id:Number,
-        name:{type:String,
-                     require:true,
-                      },
-        password:String,
-        email:String,
-        questionsAndSolutions:[String],
-       totalScore: challengeScore
-                }
+const mongoose =require('mongoose') ;
 
-            );
+const express =require('express');
+const { ObjectId } = require('bson');
 
-const tagsSchema=Schema({
-    tagName:String,
- 
+const app = express();
+app.use(express.json());
+
+mongoose.connect('mongodb://localhost:27017/lab2');
+
+const userSchema =mongoose.Schema({
+  
+    email: String,
+    username:{type:String,
+              required:true},
+    password: String,
+    questions:[String],
+    Solutions:[String],
+    totalScore: Number
 })
 
-//const challengeLanguage=Schema({
-  //  _id:ObjectId,
-    //name:[String],
-
-//})
-const challengesSchema=Schema({
-_id:[ObjectId],
-
-name:[String],
-challengeLanguage:[String],
-typeOfChallenge:[String],
-challengeScore:[Number],
-challengeLevel:[String],
-searchChallengeByTag:[typeOfChallenge],
+const User=mongoose.model('User',userSchema);
+app.post('/user/create',(req,res)=>{
+    const new_user_info=newUser({
+        email:req.body.email,
+        username:req.body.username,
+        password:req.body.password,
+        questions:req.body.questions,
+        Solutions:req.body.Solutions,
+        totalScore:req.body.totalScore
+    })
+    new_user_info.save().then(()=>res.json({"msg":"user created"}))
 })
-*/
+
+app.get("/users",(req,res)=>{
+    User.find({}).then(data=>{
+        console.log(User);
+    })    
+})
+app.put("/user/update/:id",(req,res)=>{
+    User.updateOne({_id:req.body._id},
+        {username:req.body.username},
+        {password:req.body.password},
+        {questions:req.body.questions},
+        {Solutions:req.body.Solutions},
+        {totalScore:req.body.totalScore}).then(()=>{
+            res.json({"msg":"user updated"});
+        })
+})
+
+
+app.delete("user/delete/:id",(req,res)=>{
+    User.deleteOne({_id:req.body._id},
+        {username:req.body.username},
+        {password:req.body.password},
+        {questions:req.body.questions},
+        {Solutions:req.body.Solutions},
+        {totalScore:req.body.totalScore}).then(()=>{
+            res.json({"msg":"deleted!"})
+        })})
 
    
    const users = {
@@ -51,32 +77,23 @@ searchChallengeByTag:[typeOfChallenge],
         challengeLanguage:[String],
         challengeLevel:[String],
         typeOfChallenge:[String],
-        challengeScore:[Number],
+        challengeScore:Number,
         
     }
     const leaderBoard={
         place:[Number],
         user_id:"ObjectID",
-        score:[challengeScore]
+        score:[challenges.challengeScore]
     }
     const groupOfLevels={
         _id:"ObjectID",
-        levels:[typeOfChallenge]
+        levels:[challenges.typeOfChallenge]
     }
    
     const main_database = [users,challenges];
 
 
     
-
-
-const mongoose = require('mongoose');
-const express=require('express');
-const { ObjectId } = require('bson');
-
-const app = express();
-app.use(express.json());
-mongoose.connect('mongodb://localhost:27017/Lap2');
 
 
 
@@ -88,7 +105,7 @@ const leaderBoardSchema=mongoose.Schema({
     {   type:"ObjectID",
       ref:"User"
 },
-    score:[challengeScore]
+    score:[challenges.challengeScore]
 
 });
 
