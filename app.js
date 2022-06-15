@@ -65,6 +65,83 @@ searchChallengeByTag:[typeOfChallenge],
     }
    
     const main_database = [users,challenges];
+
+
+    
+
+
+const mongoose = require('mongoose');
+const express=require('express');
+const { ObjectId } = require('bson');
+
+const app = express();
+app.use(express.json());
+mongoose.connect('mongodb://localhost:27017/Lap2');
+
+
+
+// leaderBoar schema and model
+
+const leaderBoardSchema=mongoose.Schema({
+    place:[Number],
+    user_id:
+    {   type:"ObjectID",
+      ref:"User"
+},
+    score:[challengeScore]
+
+});
+
+//model
+const LeaderBoard =mongoose.model('LeaderBoard',leaderBoardSchema);
+
+
+
+
+// insert- create
+app.post('/LeaderBoard/create',(req,res)=>{
+const LeaderBoards = new LeaderBoard({
+
+    user_id:req.body.user_id,
+    place:req.body.place,
+    score: req.body.score
+
+})
+LeaderBoards.save().then(() => res.json({ msg: "LeaderBoards created" }))
+});
+
+
+//find
+app.get('/LeaderBoards',(req,res)=>{
+    LeaderBoard.find({}).then((data)=>{
+    res.json(data);
+});
+});
+
+
+////updat
+app.put('LeaderBoard/create/:id',(req,res)=>{
+    LeaderBoard.updateOne({_id:req.body.id},{place:req.body.place},{ score:req.body.score}).then
+    res.json({ msg: "updated" })
+    
+});
+
+//delet
+app.delete('LeaderBoard/delete/:id',(req,res)=>{
+    LeaderBoard.deleteOne({_id:req.body.id}.then(()=>{
+
+          res.json({"msg":" Delete"})
+
+      }
+        )
+    )});
+    
+
+   
+
+  
+app.listen(3000,()=>console.log(`express started !`));
+
       
 
 
